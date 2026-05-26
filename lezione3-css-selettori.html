@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lezione 3 - CSS: collegamento e selettori</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5d6b82;
+      --line: #d8e0ec;
+      --paper: #ffffff;
+      --soft: #f4f7fb;
+      --accent: #0f766e;
+      --accent-strong: #115e59;
+      --accent-soft: #ccfbf1;
+      --warn: #a16207;
+      --warn-soft: #fef3c7;
+      --code: #101827;
+      --code-soft: #dbeafe;
+      --rose: #be123c;
+      --blue: #2563eb;
+      --green: #15803d;
+      --shadow: 0 18px 45px rgba(23, 32, 51, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--soft);
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(216, 224, 236, 0.9);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 12px 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      font-family: Consolas, monospace;
+      font-size: 18px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a {
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      outline: none;
+    }
+
+    .hero {
+      background:
+        linear-gradient(rgba(8, 28, 47, 0.58), rgba(8, 28, 47, 0.68)),
+        url("https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1800&q=80") center / cover;
+      color: white;
+    }
+
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 54px 20px 72px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      border-radius: 8px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #e9fffb;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(34px, 7vw, 68px);
+    }
+
+    .hero p {
+      max-width: 690px;
+      margin: 18px 0 0;
+      color: #eaf7ff;
+      font-size: 18px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      border-color: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn.light {
+      border-color: var(--line);
+      background: white;
+      color: var(--ink);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      filter: brightness(0.96);
+      outline: 3px solid rgba(20, 184, 166, 0.24);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: -34px auto 0;
+      padding: 0 20px 54px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-header p {
+      max-width: 760px;
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .section-body {
+      padding: 24px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .info-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fbfdff;
+    }
+
+    .info-box h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+    }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 8px;
+      padding: 3px 8px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-family: Consolas, monospace;
+      font-weight: 800;
+    }
+
+    .note {
+      border-left: 4px solid var(--warn);
+      border-radius: 8px;
+      padding: 14px 16px;
+      background: var(--warn-soft);
+      color: #5f4306;
+      font-weight: 650;
+    }
+
+    .code-block {
+      overflow-x: auto;
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--code);
+      color: #e7efff;
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef7f6;
+      color: var(--accent-strong);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .mini-checks {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-checks li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: white;
+    }
+
+    .mini-checks li::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .simulator {
+      display: grid;
+      grid-template-columns: minmax(250px, 0.9fr) minmax(260px, 1fr) minmax(300px, 1.05fr);
+      min-height: 640px;
+    }
+
+    .sim-panel {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+    }
+
+    .sim-panel:last-child {
+      border-right: 0;
+    }
+
+    .panel-title {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fbff;
+    }
+
+    .panel-title h3 {
+      font-size: 18px;
+    }
+
+    .panel-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .control-group {
+      display: grid;
+      gap: 7px;
+    }
+
+    .control-group label {
+      color: #304056;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .control-group select,
+    .control-group input[type="range"] {
+      width: 100%;
+    }
+
+    .control-group select {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: white;
+      color: var(--ink);
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .range-row output {
+      min-width: 54px;
+      border-radius: 8px;
+      padding: 5px 8px;
+      background: #eef2f7;
+      font-family: Consolas, monospace;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .target-switcher {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .target-btn {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .target-btn[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+
+    .hint-card {
+      border-radius: 8px;
+      padding: 14px;
+      background: #eef7f6;
+      color: var(--accent-strong);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .css-view {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+      background: var(--code);
+    }
+
+    .file-tabs {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 14px;
+      color: #d8e6ff;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .file-tab {
+      min-height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      padding: 5px 9px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #d8e6ff;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .file-tab[aria-selected="true"] {
+      border-color: rgba(45, 212, 191, 0.75);
+      background: rgba(45, 212, 191, 0.16);
+      color: #ecfeff;
+    }
+
+    .file-pane {
+      flex: 1;
+      min-height: 0;
+      margin: 0;
+      overflow: auto;
+      padding: 16px;
+      color: #e7efff;
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 14px;
+      line-height: 1.65;
+      white-space: pre;
+    }
+
+    .file-pane[hidden] {
+      display: none;
+    }
+
+    .preview-wrap {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+      background: #edf2f7;
+    }
+
+    .browser-chrome {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      background: #dde6f1;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+
+    .dot:nth-child(2) {
+      background: #f59e0b;
+    }
+
+    .dot:nth-child(3) {
+      background: #22c55e;
+    }
+
+    .address {
+      flex: 1;
+      min-width: 0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      background: white;
+      color: var(--muted);
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .preview-stage {
+      flex: 1;
+      min-height: 360px;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    #previewPage {
+      min-height: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 24px;
+      background: #ffffff;
+      color: #1f2937;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    #previewPage .browser-card {
+      border: 1px solid #d8e0ec;
+      border-radius: 8px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    #previewPage h1,
+    #previewPage h2,
+    #previewPage p {
+      transition: color 0.2s ease, background-color 0.2s ease, margin 0.2s ease, font-size 0.2s ease, font-weight 0.2s ease;
+    }
+
+    #previewPage h1 {
+      margin-top: 0;
+    }
+
+    #previewPage .evidenziato {
+      border-radius: 8px;
+      padding: 6px 8px;
+    }
+
+    #previewPage #titolo-principale {
+      border-bottom: 3px solid currentColor;
+      padding-bottom: 8px;
+    }
+
+    .active-outline {
+      outline: 3px solid rgba(20, 184, 166, 0.45);
+      outline-offset: 4px;
+    }
+
+    .challenge-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .challenge {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: white;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .challenge strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .grid.two,
+      .grid.three,
+      .challenge-strip,
+      .simulator {
+        grid-template-columns: 1fr;
+      }
+
+      .sim-panel {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .sim-panel:last-child {
+        border-bottom: 0;
+      }
+
+      .simulator {
+        min-height: 0;
+      }
+
+      .file-pane {
+        max-height: 360px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner,
+      .section-header {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .hero-inner {
+        padding: 42px 16px 62px;
+      }
+
+      main {
+        padding: 0 12px 40px;
+      }
+
+      .section-header,
+      .section-body {
+        padding: 18px;
+      }
+
+      .target-switcher {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <span class="brand-mark">{ }</span>
+          <span>CSS: collegamento e selettori</span>
+        </div>
+        <nav class="nav" aria-label="Sezioni della webapp">
+          <a href="#teoria">Teoria</a>
+          <a href="#sintassi">Sintassi</a>
+          <a href="#simulatore">Simulatore</a>
+          <a href="#verifica">Verifica</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Lezione 3 - classe terza informatica</p>
+        <h1>Dal foglio HTML grigio a una pagina con stile.</h1>
+        <p>Una webapp da usare in aula: prima i concetti essenziali, poi un simulatore dove tag, classi e ID modificano davvero l'anteprima.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#teoria">Inizia dalla teoria</a>
+          <a class="btn secondary" href="#simulatore">Vai al simulatore</a>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <section class="section" id="teoria">
+        <div class="section-header">
+          <div>
+            <h2>1. Perche usare CSS</h2>
+            <p>HTML descrive la struttura, CSS descrive l'aspetto. Separarli rende il lavoro piu ordinato e piu veloce da correggere.</p>
+          </div>
+          <a class="btn light" href="#simulatore">Prova subito</a>
+        </div>
+        <div class="section-body grid two">
+          <article class="info-box">
+            <h3><span class="tag-pill">HTML</span> struttura</h3>
+            <p>Titoli, paragrafi, link, sezioni e contenuti. Senza CSS la pagina resta funzionale, ma poco curata.</p>
+            <div class="code-block">&lt;h1&gt;Titolo&lt;/h1&gt;
+&lt;p class="evidenziato"&gt;Testo importante&lt;/p&gt;</div>
+          </article>
+          <article class="info-box">
+            <h3><span class="tag-pill">CSS</span> aspetto</h3>
+            <p>Colori, sfondi, spaziature, dimensioni del testo e peso del font. Un file puo controllare molte pagine.</p>
+            <div class="code-block">.evidenziato {
+  color: red;
+  background-color: yellow;
+}</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="sintassi">
+        <div class="section-header">
+          <div>
+            <h2>2. Sintassi e tipi di selettore</h2>
+            <p>Un selettore sceglie quali elementi HTML riceveranno le proprieta CSS.</p>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="grid three">
+            <article class="info-box">
+              <h3><span class="tag-pill">h1</span> selettore di tag</h3>
+              <p>Colpisce tutti gli elementi di quel tipo. Utile per gli stili globali.</p>
+              <div class="code-block">h1 {
+  color: blue;
+}</div>
+            </article>
+            <article class="info-box">
+              <h3><span class="tag-pill">.classe</span> selettore di classe</h3>
+              <p>Colpisce tutti gli elementi con quella classe. E ripetibile.</p>
+              <div class="code-block">.evidenziato {
+  color: red;
+}</div>
+            </article>
+            <article class="info-box">
+              <h3><span class="tag-pill">#id</span> selettore di ID</h3>
+              <p>Colpisce un elemento specifico. L'ID deve essere unico nella pagina.</p>
+              <div class="code-block">#titolo-principale {
+  color: green;
+}</div>
+            </article>
+          </div>
+
+          <div class="table-wrap" style="margin-top: 18px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Selettore</th>
+                  <th>Quando usarlo</th>
+                  <th>Esempio HTML</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>p</code>, <code>h1</code>, <code>body</code></td>
+                  <td>Per stili generali su tutti gli elementi dello stesso tipo.</td>
+                  <td><code>&lt;p&gt;Testo&lt;/p&gt;</code></td>
+                </tr>
+                <tr>
+                  <td><code>.evidenziato</code></td>
+                  <td>Per uno stile riutilizzabile su piu elementi.</td>
+                  <td><code>&lt;p class="evidenziato"&gt;...&lt;/p&gt;</code></td>
+                </tr>
+                <tr>
+                  <td><code>#titolo-principale</code></td>
+                  <td>Per un elemento unico e riconoscibile.</td>
+                  <td><code>&lt;h1 id="titolo-principale"&gt;...&lt;/h1&gt;</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="note" style="margin-top: 18px;">Regola rapida: nel CSS la classe vuole il punto, l'ID vuole il cancelletto. In HTML invece si scrive <code>class="..."</code> oppure <code>id="..."</code>.</p>
+        </div>
+      </section>
+
+      <section class="section" id="simulatore">
+        <div class="section-header">
+          <div>
+            <h2>3. Simulatore CSS</h2>
+            <p>Scegli un bersaglio, cambia le proprieta e osserva contemporaneamente il file <code>style.css</code> e l'anteprima del browser.</p>
+          </div>
+          <button class="btn light" type="button" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="simulator" aria-label="Simulatore CSS con controlli, codice e anteprima">
+          <section class="sim-panel">
+            <div class="panel-title">
+              <h3>Moduli di scelta</h3>
+              <p>Ogni modifica aggiorna una regola CSS.</p>
+            </div>
+            <div class="controls">
+              <div class="control-group">
+                <label>Selettore da modificare</label>
+                <div class="target-switcher" role="group" aria-label="Selettore da modificare">
+                  <button class="target-btn" type="button" data-target="tag" aria-pressed="true">Tag</button>
+                  <button class="target-btn" type="button" data-target="class" aria-pressed="false">Classe</button>
+                  <button class="target-btn" type="button" data-target="id" aria-pressed="false">ID</button>
+                </div>
+              </div>
+
+              <div class="hint-card" id="selectorHint"></div>
+
+              <div class="control-group">
+                <label for="textColor">Colore testo</label>
+                <select id="textColor">
+                  <option value="#1f2937">Grigio scuro</option>
+                  <option value="#2563eb">Blu</option>
+                  <option value="#be123c">Rosso</option>
+                  <option value="#15803d">Verde</option>
+                  <option value="#7c3aed">Viola</option>
+                  <option value="#f8fafc">Bianco</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="bgColor">Sfondo</label>
+                <select id="bgColor">
+                  <option value="transparent">Trasparente</option>
+                  <option value="#dbeafe">Azzurro chiaro</option>
+                  <option value="#dcfce7">Verde chiaro</option>
+                  <option value="#fef3c7">Giallo chiaro</option>
+                  <option value="#ffe4e6">Rosa chiaro</option>
+                  <option value="#172033">Blu notte</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="fontSize">Dimensione testo</label>
+                <div class="range-row">
+                  <input id="fontSize" type="range" min="14" max="42" step="1">
+                  <output id="fontSizeOut"></output>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="fontWeight">Spessore font</label>
+                <select id="fontWeight">
+                  <option value="400">Normale</option>
+                  <option value="600">Semibold</option>
+                  <option value="800">Grassetto</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="marginTop">Margine sopra</label>
+                <div class="range-row">
+                  <input id="marginTop" type="range" min="0" max="36" step="2">
+                  <output id="marginTopOut"></output>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="padding">Spazio interno</label>
+                <div class="range-row">
+                  <input id="padding" type="range" min="0" max="28" step="2">
+                  <output id="paddingOut"></output>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="sim-panel">
+            <div class="panel-title">
+              <h3>File CSS</h3>
+              <p>Qui vedi come cambierebbe <code>style.css</code>.</p>
+            </div>
+            <div class="css-view">
+              <div class="file-tabs">
+                <div class="tab-buttons" role="tablist" aria-label="File del progetto">
+                  <button class="file-tab" id="cssTab" type="button" role="tab" aria-selected="true" aria-controls="cssOutput" data-file="css">style.css</button>
+                  <button class="file-tab" id="htmlTab" type="button" role="tab" aria-selected="false" aria-controls="htmlOutput" data-file="html">pagina.html</button>
+                </div>
+                <span id="activeSelectorName">h1</span>
+              </div>
+              <pre class="file-pane" id="cssOutput" role="tabpanel" aria-labelledby="cssTab" aria-live="polite"></pre>
+              <pre class="file-pane" id="htmlOutput" role="tabpanel" aria-labelledby="htmlTab" hidden></pre>
+            </div>
+          </section>
+
+          <section class="sim-panel">
+            <div class="panel-title">
+              <h3>Anteprima browser</h3>
+              <p>Gli elementi colpiti dal selettore sono evidenziati.</p>
+            </div>
+            <div class="preview-wrap">
+              <div class="browser-chrome" aria-hidden="true">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="address">file:///lezione3/pagina.html</span>
+              </div>
+              <div class="preview-stage">
+                <article id="previewPage">
+                  <h1 id="titolo-principale">Il mio primo sito con CSS</h1>
+                  <p class="evidenziato">Questo paragrafo ha la classe evidenziato.</p>
+                  <p>Questo e un paragrafo normale: riceve solo gli stili generali.</p>
+                  <div class="browser-card">
+                    <h2>Una sezione della pagina</h2>
+                    <p class="evidenziato">Anche questo testo usa la stessa classe evidenziato.</p>
+                    <p>Con una sola regola puoi modificare piu elementi insieme.</p>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="section" id="verifica">
+        <div class="section-header">
+          <div>
+            <h2>4. Verifica veloce per il laboratorio</h2>
+            <p>Checklist da usare mentre gli studenti lavorano sul proprio file HTML + CSS.</p>
+          </div>
+        </div>
+        <div class="section-body grid two">
+          <div>
+            <h3>Requisiti minimi</h3>
+            <ul class="mini-checks">
+              <li>File <code>style.css</code> creato e collegato con <code>&lt;link&gt;</code>.</li>
+              <li>Almeno un selettore di tag con una proprieta applicata.</li>
+              <li>Almeno una classe applicata a due elementi diversi.</li>
+              <li>Almeno un ID applicato a un solo elemento.</li>
+              <li>Colore di sfondo diverso dal default.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Errori comuni</h3>
+            <ul class="mini-checks">
+              <li>Dimenticare le virgolette in <code>class="evidenziato"</code>.</li>
+              <li>Scrivere <code>evidenziato</code> invece di <code>.evidenziato</code> nel CSS.</li>
+              <li>Scrivere <code>titolo</code> invece di <code>#titolo</code> nel CSS.</li>
+              <li>Mettere il file CSS in una cartella diversa senza correggere <code>href</code>.</li>
+              <li>Usare lo stesso ID su piu elementi.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <p class="footer-note">Suggerimento d'aula: fai cambiare prima il selettore di tag, poi la classe, poi l'ID. La differenza si vede subito.</p>
+    </main>
+  </div>
+
+  <script>
+    const selectorData = {
+      tag: {
+        selector: "p",
+        label: "p",
+        hint: "Tag: modifica tutti i paragrafi della pagina.",
+        elements: "#previewPage p",
+        values: {
+          textColor: "#1f2937",
+          bgColor: "transparent",
+          fontSize: 17,
+          fontWeight: "400",
+          marginTop: 12,
+          padding: 0
+        }
+      },
+      class: {
+        selector: ".evidenziato",
+        label: ".evidenziato",
+        hint: "Classe: modifica tutti gli elementi con class=\"evidenziato\".",
+        elements: "#previewPage .evidenziato",
+        values: {
+          textColor: "#be123c",
+          bgColor: "#ffe4e6",
+          fontSize: 18,
+          fontWeight: "800",
+          marginTop: 12,
+          padding: 8
+        }
+      },
+      id: {
+        selector: "#titolo-principale",
+        label: "#titolo-principale",
+        hint: "ID: modifica un solo elemento, quello con id=\"titolo-principale\".",
+        elements: "#previewPage #titolo-principale",
+        values: {
+          textColor: "#15803d",
+          bgColor: "transparent",
+          fontSize: 34,
+          fontWeight: "800",
+          marginTop: 0,
+          padding: 0
+        }
+      }
+    };
+
+    const defaultData = JSON.parse(JSON.stringify(selectorData));
+    let activeTarget = "tag";
+
+    const controls = {
+      textColor: document.querySelector("#textColor"),
+      bgColor: document.querySelector("#bgColor"),
+      fontSize: document.querySelector("#fontSize"),
+      fontWeight: document.querySelector("#fontWeight"),
+      marginTop: document.querySelector("#marginTop"),
+      padding: document.querySelector("#padding")
+    };
+
+    const outputs = {
+      fontSize: document.querySelector("#fontSizeOut"),
+      marginTop: document.querySelector("#marginTopOut"),
+      padding: document.querySelector("#paddingOut")
+    };
+
+    const cssOutput = document.querySelector("#cssOutput");
+    const htmlOutput = document.querySelector("#htmlOutput");
+    const selectorHint = document.querySelector("#selectorHint");
+    const activeSelectorName = document.querySelector("#activeSelectorName");
+    const targetButtons = document.querySelectorAll(".target-btn");
+    const fileTabs = document.querySelectorAll(".file-tab");
+    const filePanes = {
+      css: document.querySelector("#cssOutput"),
+      html: document.querySelector("#htmlOutput")
+    };
+
+    const htmlFile = `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>La mia prima pagina CSS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1 id="titolo-principale">Il mio primo sito con CSS</h1>
+
+  <p class="evidenziato">
+    Questo paragrafo ha la classe evidenziato.
+  </p>
+
+  <p>
+    Questo e un paragrafo normale: riceve solo gli stili generali.
+  </p>
+
+  <section>
+    <h2>Una sezione della pagina</h2>
+    <p class="evidenziato">
+      Anche questo testo usa la stessa classe evidenziato.
+    </p>
+    <p>
+      Con una sola regola puoi modificare piu elementi insieme.
+    </p>
+  </section>
+</body>
+</html>`;
+
+    function propertyLines(values) {
+      return [
+        ["color", values.textColor],
+        ["background-color", values.bgColor],
+        ["font-size", values.fontSize + "px"],
+        ["font-weight", values.fontWeight],
+        ["margin-top", values.marginTop + "px"],
+        ["padding", values.padding + "px"]
+      ];
+    }
+
+    function buildRule(key) {
+      const data = selectorData[key];
+      const lines = propertyLines(data.values)
+        .map(([property, value]) => `  ${property}: ${value};`)
+        .join("\n");
+      return `${data.selector} {\n${lines}\n}`;
+    }
+
+    function buildCssFile() {
+      return `/* style.css */\n\n/* Selettore di tag */\n${buildRule("tag")}\n\n/* Selettore di classe */\n${buildRule("class")}\n\n/* Selettore di ID */\n${buildRule("id")}`;
+    }
+
+    function clearPreviewStyles() {
+      document.querySelectorAll("#previewPage h1, #previewPage h2, #previewPage p").forEach((element) => {
+        element.removeAttribute("style");
+        element.classList.remove("active-outline");
+      });
+    }
+
+    function applyPreviewStyles() {
+      clearPreviewStyles();
+
+      Object.keys(selectorData).forEach((key) => {
+        const data = selectorData[key];
+        const values = data.values;
+        document.querySelectorAll(data.elements).forEach((element) => {
+          element.style.color = values.textColor;
+          element.style.backgroundColor = values.bgColor;
+          element.style.fontSize = values.fontSize + "px";
+          element.style.fontWeight = values.fontWeight;
+          element.style.marginTop = values.marginTop + "px";
+          element.style.padding = values.padding + "px";
+        });
+      });
+
+      document.querySelectorAll(selectorData[activeTarget].elements).forEach((element) => {
+        element.classList.add("active-outline");
+      });
+    }
+
+    function syncControlsFromActiveTarget() {
+      const values = selectorData[activeTarget].values;
+      controls.textColor.value = values.textColor;
+      controls.bgColor.value = values.bgColor;
+      controls.fontSize.value = values.fontSize;
+      controls.fontWeight.value = values.fontWeight;
+      controls.marginTop.value = values.marginTop;
+      controls.padding.value = values.padding;
+      outputs.fontSize.value = values.fontSize + "px";
+      outputs.marginTop.value = values.marginTop + "px";
+      outputs.padding.value = values.padding + "px";
+    }
+
+    function render() {
+      syncControlsFromActiveTarget();
+      selectorHint.textContent = selectorData[activeTarget].hint;
+      activeSelectorName.textContent = selectorData[activeTarget].label;
+      cssOutput.textContent = buildCssFile();
+      htmlOutput.textContent = htmlFile;
+      applyPreviewStyles();
+      targetButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.target === activeTarget));
+      });
+    }
+
+    function updateActiveValues() {
+      const values = selectorData[activeTarget].values;
+      values.textColor = controls.textColor.value;
+      values.bgColor = controls.bgColor.value;
+      values.fontSize = Number(controls.fontSize.value);
+      values.fontWeight = controls.fontWeight.value;
+      values.marginTop = Number(controls.marginTop.value);
+      values.padding = Number(controls.padding.value);
+      render();
+    }
+
+    targetButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeTarget = button.dataset.target;
+        render();
+      });
+    });
+
+    fileTabs.forEach((button) => {
+      button.addEventListener("click", () => {
+        const selectedFile = button.dataset.file;
+        fileTabs.forEach((tab) => {
+          tab.setAttribute("aria-selected", String(tab.dataset.file === selectedFile));
+        });
+        Object.entries(filePanes).forEach(([file, pane]) => {
+          pane.hidden = file !== selectedFile;
+        });
+      });
+    });
+
+    Object.values(controls).forEach((control) => {
+      control.addEventListener("input", updateActiveValues);
+      control.addEventListener("change", updateActiveValues);
+    });
+
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      Object.keys(defaultData).forEach((key) => {
+        selectorData[key].values = { ...defaultData[key].values };
+      });
+      activeTarget = "tag";
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
