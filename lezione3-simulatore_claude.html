@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Selettori — Lezione 3</title>
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --surface: #1a1a2e;
+      --surface2: #16213e;
+      --accent: #6c63ff;
+      --text: #e8e8f0;
+      --text-dim: #8888aa;
+      --code-bg: #0d1117;
+      --border: #2a2a4a;
+      --tag-color: #79c0ff;
+      --class-color: #ffa657;
+      --id-color: #7ee787;
+      --prop-color: #e3b341;
+      --val-color: #ff7b72;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 2px solid var(--accent);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 1.3rem; color: var(--accent); }
+    .badge {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1.2rem 2rem 0;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg);
+    }
+    .tab {
+      padding: 0.55rem 1.3rem;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: 2px solid transparent;
+      border-bottom: none;
+      background: var(--surface);
+      color: var(--text-dim);
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      background: var(--surface2);
+      color: var(--accent);
+      border-color: var(--border);
+      border-bottom-color: var(--surface2);
+      margin-bottom: -2px;
+    }
+
+    /* ── Sections ── */
+    .section { display: none; padding: 2rem; }
+    .section.active { display: block; }
+
+    /* ── Theory ── */
+    .theory-intro {
+      max-width: 780px;
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+    .theory-intro h2 { font-size: 1.7rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .theory-intro p { color: var(--text-dim); line-height: 1.6; }
+
+    .selector-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.4rem;
+      max-width: 1080px;
+      margin: 0 auto 2.5rem;
+    }
+    .selector-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1.4rem;
+      border: 2px solid var(--border);
+      transition: transform 0.2s;
+    }
+    .selector-card:hover { transform: translateY(-3px); }
+    .selector-card.tag  { border-top-color: var(--tag-color); }
+    .selector-card.cls  { border-top-color: var(--class-color); }
+    .selector-card.id   { border-top-color: var(--id-color); }
+
+    .card-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.9rem; }
+    .card-icon {
+      font-size: 1.5rem;
+      width: 2.4rem; height: 2.4rem;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      font-weight: 900; font-family: monospace;
+    }
+    .tag .card-icon  { background: rgba(121,192,255,.15); color: var(--tag-color); }
+    .cls .card-icon  { background: rgba(255,166,87,.15);  color: var(--class-color); }
+    .id  .card-icon  { background: rgba(126,231,135,.15); color: var(--id-color); }
+
+    .card-title    { font-size: 1.15rem; font-weight: 700; }
+    .card-subtitle { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.1rem; }
+    .card-desc     { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; margin-bottom: 1rem; }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-family: 'Consolas','Courier New',monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .hl-tag   { color: var(--tag-color); }
+    .hl-cls   { color: var(--class-color); }
+    .hl-id    { color: var(--id-color); }
+    .hl-prop  { color: var(--prop-color); }
+    .hl-val   { color: var(--val-color); }
+    .hl-cmt   { color: #555577; font-style: italic; }
+    .hl-sel   { font-weight: bold; }
+
+    .use-when {
+      margin-top: 1rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.83rem;
+      line-height: 1.5;
+    }
+    .tag .use-when { background: rgba(121,192,255,.08); border-left: 3px solid var(--tag-color); }
+    .cls .use-when { background: rgba(255,166,87,.08);  border-left: 3px solid var(--class-color); }
+    .id  .use-when { background: rgba(126,231,135,.08); border-left: 3px solid var(--id-color); }
+    .use-when strong { display: block; margin-bottom: 0.2rem; }
+
+    /* Summary table */
+    .table-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .table-wrap h3 {
+      padding: 0.9rem 1.4rem;
+      background: var(--surface2);
+      font-size: 0.95rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 0.7rem 1.4rem;
+      text-align: left;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface2);
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(108,99,255,.05); }
+    .bt { color: var(--tag-color);   font-weight: 700; font-family: monospace; }
+    .bc { color: var(--class-color); font-weight: 700; font-family: monospace; }
+    .bi { color: var(--id-color);    font-weight: 700; font-family: monospace; }
+
+    /* ── Simulator layout ── */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 290px 1fr 1fr;
+      gap: 1rem;
+      height: calc(100vh - 178px);
+      min-height: 520px;
+    }
+    .sim-panel {
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 0.6rem 1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .panel-body { padding: 1rem; overflow-y: auto; flex: 1; }
+
+    /* Form controls */
+    .fg { margin-bottom: 0.9rem; }
+    .fl {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .fc {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.88rem;
+      font-family: inherit;
+      transition: border-color .2s;
+      appearance: none;
+    }
+    .fc:focus { outline: none; border-color: var(--accent); }
+    .fc option { background: var(--surface); }
+
+    .color-row { display: flex; align-items: center; gap: 0.5rem; }
+    .color-row input[type="color"] {
+      width: 38px; height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: none;
+      cursor: pointer;
+      padding: 2px;
+    }
+    .color-row .fc { flex: 1; }
+
+    .range-row { display: flex; align-items: center; gap: 0.5rem; }
+    .range-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+    .range-val { font-family: monospace; font-size: 0.82rem; color: var(--val-color); min-width: 3.5rem; text-align: right; }
+
+    .divider { height: 1px; background: var(--border); margin: 0.9rem 0; }
+    .sec-title {
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 0.65rem;
+    }
+
+    .elem-btns { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.65rem; }
+    .elem-btn {
+      padding: 0.28rem 0.55rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.8rem;
+      transition: all .15s;
+    }
+    .elem-btn:hover  { border-color: var(--accent); color: var(--text); }
+    .elem-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.12); }
+
+    .sel-btns { display: flex; gap: 0.4rem; margin-bottom: 0.7rem; }
+    .sel-btn {
+      flex: 1;
+      padding: 0.45rem;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--code-bg);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.83rem;
+      font-weight: 700;
+      font-family: monospace;
+      transition: all .15s;
+    }
+    .sel-btn:hover { background: var(--surface2); }
+    .sel-btn.at { border-color: var(--tag-color);   color: var(--tag-color);   background: rgba(121,192,255,.1); }
+    .sel-btn.ac { border-color: var(--class-color); color: var(--class-color); background: rgba(255,166,87,.1); }
+    .sel-btn.ai { border-color: var(--id-color);    color: var(--id-color);    background: rgba(126,231,135,.1); }
+
+    /* Code display */
+    .code-tabs {
+      display: flex;
+      gap: 0.2rem;
+      padding: 0.45rem 1rem 0;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .ctab {
+      padding: 0.28rem 0.7rem;
+      font-size: 0.78rem;
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .ctab:hover { color: var(--text); }
+    .ctab.active { background: var(--code-bg); color: var(--text); border-color: var(--border); border-bottom-color: var(--code-bg); }
+
+    .cpane { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+    .cpane.active { display: flex; }
+
+    .code-out {
+      font-family: 'Consolas','Courier New',monospace;
+      font-size: 0.83rem;
+      line-height: 1.7;
+      padding: 1rem;
+      white-space: pre;
+      overflow: auto;
+      flex: 1;
+      background: var(--code-bg);
+    }
+    .code-out .st { color: var(--tag-color);   font-weight: bold; }
+    .code-out .sc { color: var(--class-color); font-weight: bold; }
+    .code-out .si { color: var(--id-color);    font-weight: bold; }
+    .code-out .pr { color: var(--prop-color); }
+    .code-out .vl { color: var(--val-color); }
+    .code-out .pu { color: #6e7681; }
+    .code-out .at { color: var(--class-color); }
+    .code-out .tk { color: var(--accent); }
+    .code-out .cm { color: #555577; font-style: italic; }
+
+    /* Preview */
+    .preview-wrap { flex: 1; overflow: hidden; background: #fff; }
+    #preview-frame { width: 100%; height: 100%; border: none; display: block; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    @media (max-width: 860px) {
+      .sim-layout { grid-template-columns: 1fr; height: auto; }
+      .sim-panel  { min-height: 320px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CSS Selettori</h1>
+  <span class="badge">Lezione 3</span>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('theory',this)">📖 Teoria</div>
+  <div class="tab"        onclick="showTab('sim',this)">🎨 Simulatore</div>
+</div>
+
+<!-- ══════════════════════════════════════════════ THEORY ══ -->
+<div id="theory" class="section active">
+
+  <div class="theory-intro">
+    <h2>I Selettori CSS</h2>
+    <p>Un <strong>selettore</strong> indica al browser <em>quali elementi</em> vuoi stilizzare.<br>
+       Tre tipi fondamentali — ognuno con il suo scopo preciso.</p>
+  </div>
+
+  <div class="selector-cards">
+
+    <!-- TAG -->
+    <div class="selector-card tag">
+      <div class="card-header">
+        <div class="card-icon">&lt;&gt;</div>
+        <div>
+          <div class="card-title">Selettore di Tag</div>
+          <div class="card-subtitle">Seleziona per tipo di elemento</div>
+        </div>
+      </div>
+      <p class="card-desc">
+        Colpisce <strong>tutti</strong> gli elementi di quel tipo nella pagina.
+        Scrivi <code>h1</code> e ogni titolo h1 riceverà lo stile.
+      </p>
+      <div class="code-block">
+<span class="hl-cmt">/* tutti gli h1 diventano blu */</span>
+<span class="hl-tag hl-sel">h1</span> {
+  <span class="hl-prop">color</span>: <span class="hl-val">blue</span>;
+  <span class="hl-prop">font-size</span>: <span class="hl-val">32px</span>;
+}
+
+<span class="hl-cmt">/* tutti i paragrafi grigio scuro */</span>
+<span class="hl-tag hl-sel">p</span> {
+  <span class="hl-prop">color</span>: <span class="hl-val">#333</span>;
+}</div>
+      <div class="use-when">
+        <strong>Quando usarlo</strong>
+        Stili globali — vuoi che tutti i paragrafi o tutti i titoli abbiano lo stesso aspetto.
+      </div>
+    </div>
+
+    <!-- CLASS -->
+    <div class="selector-card cls">
+      <div class="card-header">
+        <div class="card-icon">.</div>
+        <div>
+          <div class="card-title">Selettore di Classe</div>
+          <div class="card-subtitle">Seleziona per attributo class=""</div>
+        </div>
+      </div>
+      <p class="card-desc">
+        Colpisce tutti gli elementi con quella classe.
+        La stessa classe può essere applicata a <strong>quanti elementi vuoi</strong>, anche di tipo diverso.
+      </p>
+      <div class="code-block">
+<span class="hl-cmt">/* inizia sempre con il punto */</span>
+<span class="hl-cls hl-sel">.evidenziato</span> {
+  <span class="hl-prop">background-color</span>: <span class="hl-val">yellow</span>;
+  <span class="hl-prop">font-weight</span>: <span class="hl-val">bold</span>;
+}
+
+<span class="hl-cmt">/* HTML — applicata a più elementi */</span>
+&lt;<span class="hl-tag">p</span> <span class="hl-prop">class</span>=<span class="hl-val">"evidenziato"</span>&gt;Primo&lt;/<span class="hl-tag">p</span>&gt;
+&lt;<span class="hl-tag">p</span> <span class="hl-prop">class</span>=<span class="hl-val">"evidenziato"</span>&gt;Secondo&lt;/<span class="hl-tag">p</span>&gt;</div>
+      <div class="use-when">
+        <strong>Quando usarlo</strong>
+        Stili ripetibili — un gruppo di elementi deve avere lo stesso aspetto ma non sono tutti dello stesso tipo.
+      </div>
+    </div>
+
+    <!-- ID -->
+    <div class="selector-card id">
+      <div class="card-header">
+        <div class="card-icon">#</div>
+        <div>
+          <div class="card-title">Selettore di ID</div>
+          <div class="card-subtitle">Seleziona per attributo id=""</div>
+        </div>
+      </div>
+      <p class="card-desc">
+        Colpisce <strong>un solo elemento unico</strong>.
+        L'ID deve comparire una sola volta nella pagina — usarlo su due elementi è un errore.
+      </p>
+      <div class="code-block">
+<span class="hl-cmt">/* inizia sempre con il cancelletto */</span>
+<span class="hl-id hl-sel">#titolo-principale</span> {
+  <span class="hl-prop">color</span>: <span class="hl-val">green</span>;
+  <span class="hl-prop">text-align</span>: <span class="hl-val">center</span>;
+}
+
+<span class="hl-cmt">/* HTML — usato su un solo elemento */</span>
+&lt;<span class="hl-tag">h1</span> <span class="hl-prop">id</span>=<span class="hl-val">"titolo-principale"</span>&gt;Titolo&lt;/<span class="hl-tag">h1</span>&gt;</div>
+      <div class="use-when">
+        <strong>Quando usarlo</strong>
+        Stile unico — vuoi stilizzare un elemento specifico che non si ripete, come l'intestazione principale.
+      </div>
+    </div>
+
+  </div><!-- /cards -->
+
+  <div class="table-wrap">
+    <h3>Riepilogo — Quale selettore scegliere?</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Selettore</th>
+          <th>Sintassi CSS</th>
+          <th>Quanti elementi colpisce</th>
+          <th>Quando usarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="bt">tag</span></td>
+          <td><code>h1 { … }</code></td>
+          <td>Tutti gli &lt;h1&gt; della pagina</td>
+          <td>Stili globali uniformi</td>
+        </tr>
+        <tr>
+          <td><span class="bc">.classe</span></td>
+          <td><code>.rosso { … }</code></td>
+          <td>Tutti con class="rosso"</td>
+          <td>Stili ripetibili su gruppi</td>
+        </tr>
+        <tr>
+          <td><span class="bi">#id</span></td>
+          <td><code>#hero { … }</code></td>
+          <td>Un solo elemento (unico)</td>
+          <td>Stile su elemento unico</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /theory -->
+
+<!-- ══════════════════════════════════════════════ SIMULATOR ══ -->
+<div id="sim" class="section">
+  <div class="sim-layout">
+
+    <!-- ── Panel 1: Controls ── -->
+    <div class="sim-panel">
+      <div class="panel-header">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#febc2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+        &nbsp;Controlli
+      </div>
+      <div class="panel-body">
+
+        <div class="sec-title">1. Scegli l'elemento</div>
+        <div class="elem-btns">
+          <button class="elem-btn active" data-el="h1"     onclick="setEl(this)">h1</button>
+          <button class="elem-btn"        data-el="h2"     onclick="setEl(this)">h2</button>
+          <button class="elem-btn"        data-el="p"      onclick="setEl(this)">p</button>
+          <button class="elem-btn"        data-el="div"    onclick="setEl(this)">div</button>
+          <button class="elem-btn"        data-el="button" onclick="setEl(this)">button</button>
+          <button class="elem-btn"        data-el="a"      onclick="setEl(this)">a</button>
+        </div>
+
+        <div class="sec-title">2. Tipo di selettore</div>
+        <div class="sel-btns">
+          <button class="sel-btn at" data-st="tag"   onclick="setSt(this)">tag</button>
+          <button class="sel-btn"    data-st="class" onclick="setSt(this)">.classe</button>
+          <button class="sel-btn"    data-st="id"    onclick="setSt(this)">#id</button>
+        </div>
+
+        <div class="fg" id="name-fg" style="display:none">
+          <label class="fl" id="name-lbl">Nome classe</label>
+          <input type="text" class="fc" id="sel-name" value="mio-stile" oninput="render()">
+        </div>
+
+        <div class="divider"></div>
+        <div class="sec-title">3. Testo</div>
+
+        <div class="fg">
+          <label class="fl">Colore testo</label>
+          <div class="color-row">
+            <input type="color" id="cp-color" value="#222222" oninput="syncC(this,'ct-color')">
+            <input type="text"  class="fc" id="ct-color" value="#222222" oninput="syncT(this,'cp-color')" maxlength="7" placeholder="#000000">
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Dimensione testo</label>
+          <div class="range-row">
+            <input type="range" id="r-fs" min="10" max="72" value="16" oninput="render()">
+            <span class="range-val" id="v-fs">16px</span>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Spessore font</label>
+          <select class="fc" id="s-fw" onchange="render()">
+            <option value="normal">normal</option>
+            <option value="bold">bold</option>
+            <option value="100">100 — Thin</option>
+            <option value="300">300 — Light</option>
+            <option value="400">400 — Regular</option>
+            <option value="600">600 — SemiBold</option>
+            <option value="700">700 — Bold</option>
+            <option value="900">900 — Black</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Allineamento</label>
+          <select class="fc" id="s-ta" onchange="render()">
+            <option value="left">left</option>
+            <option value="center">center</option>
+            <option value="right">right</option>
+            <option value="justify">justify</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+        <div class="sec-title">4. Sfondo e bordo</div>
+
+        <div class="fg">
+          <label class="fl">Colore sfondo</label>
+          <div class="color-row">
+            <input type="color" id="cp-bg" value="#ffffff" oninput="syncC(this,'ct-bg')">
+            <input type="text"  class="fc" id="ct-bg" value="#ffffff" oninput="syncT(this,'cp-bg')" maxlength="7" placeholder="#ffffff">
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Padding (spazio interno)</label>
+          <div class="range-row">
+            <input type="range" id="r-p" min="0" max="60" value="0" oninput="render()">
+            <span class="range-val" id="v-p">0px</span>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Border radius (arrotondamento)</label>
+          <div class="range-row">
+            <input type="range" id="r-br" min="0" max="50" value="0" oninput="render()">
+            <span class="range-val" id="v-br">0px</span>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Bordo</label>
+          <select class="fc" id="s-bo" onchange="render()">
+            <option value="none">none</option>
+            <option value="1px solid #aaa">1px solid</option>
+            <option value="2px solid #555">2px solid</option>
+            <option value="3px dashed #333">3px dashed</option>
+            <option value="4px dotted #000">4px dotted</option>
+          </select>
+        </div>
+
+      </div>
+    </div><!-- /controls -->
+
+    <!-- ── Panel 2: Code ── -->
+    <div class="sim-panel">
+      <div class="panel-header">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#febc2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+        &nbsp;Codice generato
+      </div>
+      <div class="code-tabs">
+        <div class="ctab active" onclick="showCode('css',this)">style.css</div>
+        <div class="ctab"        onclick="showCode('html',this)">index.html</div>
+      </div>
+      <div class="cpane active" id="cpane-css">
+        <div id="out-css" class="code-out"></div>
+      </div>
+      <div class="cpane" id="cpane-html">
+        <div id="out-html" class="code-out"></div>
+      </div>
+    </div>
+
+    <!-- ── Panel 3: Preview ── -->
+    <div class="sim-panel">
+      <div class="panel-header">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#febc2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+        &nbsp;Anteprima browser
+      </div>
+      <div class="preview-wrap">
+        <iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /sim -->
+
+<script>
+  /* ── state ── */
+  var ST = 'tag';   // selector type: tag | class | id
+  var EL = 'h1';   // element
+
+  /* ── tab switching ── */
+  function showTab(id, btn) {
+    document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function showCode(id, btn) {
+    document.querySelectorAll('.ctab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.cpane').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('cpane-'+id).classList.add('active');
+  }
+
+  /* ── element & selector type ── */
+  function setEl(btn) {
+    document.querySelectorAll('.elem-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    EL = btn.dataset.el;
+    render();
+  }
+
+  function setSt(btn) {
+    document.querySelectorAll('.sel-btn').forEach(function(b){
+      b.classList.remove('at','ac','ai');
+    });
+    ST = btn.dataset.st;
+    if (ST==='tag')   btn.classList.add('at');
+    if (ST==='class') btn.classList.add('ac');
+    if (ST==='id')    btn.classList.add('ai');
+
+    var fg  = document.getElementById('name-fg');
+    var lbl = document.getElementById('name-lbl');
+    var inp = document.getElementById('sel-name');
+    if (ST==='class'){
+      fg.style.display='block'; lbl.textContent='Nome classe';
+      if (!inp.value || inp.value==='elemento-unico') inp.value='mio-stile';
+    } else if (ST==='id') {
+      fg.style.display='block'; lbl.textContent='Nome ID';
+      if (!inp.value || inp.value==='mio-stile') inp.value='elemento-unico';
+    } else {
+      fg.style.display='none';
+    }
+    render();
+  }
+
+  /* ── color sync ── */
+  function syncC(picker, textId) {
+    document.getElementById(textId).value = picker.value;
+    render();
+  }
+  function syncT(input, pickerId) {
+    if (/^#[0-9a-fA-F]{6}$/.test(input.value))
+      document.getElementById(pickerId).value = input.value;
+    render();
+  }
+
+  /* ── helpers ── */
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function getName(){
+    return document.getElementById('sel-name')
+      ? document.getElementById('sel-name').value.replace(/\s+/g,'-') || 'mio-stile'
+      : 'mio-stile';
+  }
+
+  function getSelector(){
+    if (ST==='tag')   return EL;
+    if (ST==='class') return '.'+getName();
+    return '#'+getName();
+  }
+
+  function getProps(){
+    var fs = document.getElementById('r-fs').value;
+    var fw = document.getElementById('s-fw').value;
+    var ta = document.getElementById('s-ta').value;
+    var p  = document.getElementById('r-p').value;
+    var br = document.getElementById('r-br').value;
+    var bo = document.getElementById('s-bo').value;
+    var cl = document.getElementById('ct-color').value || '#222222';
+    var bg = document.getElementById('ct-bg').value   || '#ffffff';
+
+    document.getElementById('v-fs').textContent = fs+'px';
+    document.getElementById('v-p').textContent  = p+'px';
+    document.getElementById('v-br').textContent = br+'px';
+
+    var props = [];
+    props.push({p:'color',           v:cl});
+    props.push({p:'font-size',       v:fs+'px'});
+    if (fw!=='normal') props.push({p:'font-weight', v:fw});
+    if (ta!=='left')   props.push({p:'text-align',  v:ta});
+    if (bg!=='#ffffff') props.push({p:'background-color', v:bg});
+    if (p!=='0')  props.push({p:'padding',       v:p+'px'});
+    if (br!=='0') props.push({p:'border-radius', v:br+'px'});
+    if (bo!=='none') props.push({p:'border',     v:bo});
+    return props;
+  }
+
+  /* ── main render ── */
+  function render(){
+    var sel   = getSelector();
+    var props = getProps();
+
+    /* ── CSS output ── */
+    var selClass = ST==='tag'?'st': ST==='class'?'sc':'si';
+    var cssHtml = '<span class="'+selClass+'">'+esc(sel)+'</span> <span class="pu">{</span>\n';
+    props.forEach(function(kv){
+      cssHtml += '  <span class="pr">'+esc(kv.p)+'</span><span class="pu">:</span> <span class="vl">'+esc(kv.v)+'</span><span class="pu">;</span>\n';
+    });
+    cssHtml += '<span class="pu">}</span>';
+    document.getElementById('out-css').innerHTML = cssHtml;
+
+    /* ── HTML output ── */
+    var name = getName();
+    var htmlHtml = '';
+    if (ST==='class'){
+      htmlHtml += '<span class="cm">&lt;!-- La stessa classe su più elementi --&gt;</span>\n\n';
+      htmlHtml += '<span class="pu">&lt;</span><span class="tk">'+EL+'</span> <span class="at">class</span><span class="pu">="</span><span class="vl">'+esc(name)+'</span><span class="pu">"&gt;</span>\n';
+      htmlHtml += '  Elemento con la classe\n';
+      htmlHtml += '<span class="pu">&lt;/</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n\n';
+      htmlHtml += '<span class="pu">&lt;</span><span class="tk">'+EL+'</span> <span class="at">class</span><span class="pu">="</span><span class="vl">'+esc(name)+'</span><span class="pu">"&gt;</span>\n';
+      htmlHtml += '  Anche questo ha la stessa classe\n';
+      htmlHtml += '<span class="pu">&lt;/</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n\n';
+      htmlHtml += '<span class="pu">&lt;</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n';
+      htmlHtml += '  Questo NON ha la classe — non viene stilizzato\n';
+      htmlHtml += '<span class="pu">&lt;/</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>';
+    } else if (ST==='id'){
+      htmlHtml += '<span class="cm">&lt;!-- L\'ID si usa su un solo elemento --&gt;</span>\n\n';
+      htmlHtml += '<span class="pu">&lt;</span><span class="tk">'+EL+'</span> <span class="at">id</span><span class="pu">="</span><span class="vl">'+esc(name)+'</span><span class="pu">"&gt;</span>\n';
+      htmlHtml += '  L\'elemento unico con questo ID\n';
+      htmlHtml += '<span class="pu">&lt;/</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n\n';
+      htmlHtml += '<span class="cm">&lt;!-- ⚠ Non usare lo stesso ID due volte! --&gt;</span>';
+    } else {
+      htmlHtml += '<span class="cm">&lt;!-- Il selettore di tag colpisce tutti gli elementi --&gt;</span>\n\n';
+      htmlHtml += '<span class="pu">&lt;</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n';
+      htmlHtml += '  Primo '+EL+' — stilizzato\n';
+      htmlHtml += '<span class="pu">&lt;/</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n\n';
+      htmlHtml += '<span class="pu">&lt;</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>\n';
+      htmlHtml += '  Secondo '+EL+' — anche questo stilizzato\n';
+      htmlHtml += '<span class="pu">&lt;/</span><span class="tk">'+EL+'</span><span class="pu">&gt;</span>';
+    }
+    document.getElementById('out-html').innerHTML = htmlHtml;
+
+    /* ── preview ── */
+    var inlineStyle = props.map(function(kv){ return kv.p+':'+kv.v; }).join(';');
+    var content = '';
+    var label = EL==='button'?'Clicca qui': EL==='a'?'Link di esempio': 'Testo di esempio';
+
+    if (ST==='class'){
+      content  = '<'+EL+' class="'+name+'" style="display:'+( EL==='div'||EL==='button'?'inline-block':'block')+'">'+label+' (con classe)</'+EL+'>\n';
+      content += '<'+EL+' class="'+name+'" style="display:'+( EL==='div'||EL==='button'?'inline-block':'block')+'">'+label+' (con classe)</'+EL+'>\n';
+      content += '<'+EL+'>'+label+' (senza classe — non stilizzato)</'+EL+'>';
+    } else if (ST==='id'){
+      content  = '<'+EL+' id="'+name+'">'+label+' (con ID)</'+EL+'>\n';
+      content += '<'+EL+'>'+label+' (senza ID — non stilizzato)</'+EL+'>';
+    } else {
+      content  = '<'+EL+'>'+label+'</'+EL+'>\n';
+      content += '<'+EL+'>'+(EL==='a'?'Secondo link':'Secondo '+EL)+'</'+EL+'>';
+    }
+
+    var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>'+
+      'body{font-family:system-ui,sans-serif;padding:20px;background:#f5f5f5;}'+
+      '*{box-sizing:border-box;}'+
+      sel+'{'+inlineStyle+'}'+
+      '</style></head><body>'+content+'</body></html>';
+
+    var frame = document.getElementById('preview-frame');
+    var doc   = frame.contentDocument || frame.contentWindow.document;
+    doc.open(); doc.write(html); doc.close();
+  }
+
+  /* boot */
+  render();
+</script>
+</body>
+</html>
